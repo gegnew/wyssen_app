@@ -21,6 +21,10 @@ def get_field(field="*") -> List[Dict]:
     connection.close()
     return results
 
+@app.route('/')
+def home() -> str:
+    return "Welcome to Wyssen"
+
 @app.route('/data')
 def query() -> str:
     field = request.args.get("field") or "*"
