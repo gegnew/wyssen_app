@@ -2,11 +2,13 @@ version: "2"
 services:
   app:
     build: ./app
+    command: gunicorn --bind 0.0.0.0:5000 app:app
+    env_file:
+      - ./.env.prd
     links:
       - db
-    ports:
-      - "5000:5000"
-
+    expose:
+      - 5000
   db:
     image: mysql:5.7
     ports:
@@ -15,3 +17,9 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - ./db:/docker-entrypoint-initdb.d/:ro
+  nginx:
+    build: ./nginx
+    ports:
+      - 6969:80
+    depends_on:
+      - app
