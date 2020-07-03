@@ -1,3 +1,4 @@
 Flask
 mysql-connector
 flask-migrate
+gunicorn==20.0.4

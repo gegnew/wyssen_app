@@ -1,12 +1,11 @@
 from typing import List, Dict
-from flask import Flask
+from flask import Flask, request
 import mysql.connector
 import json
 
 app = Flask(__name__)
 
-
-def get_images() -> List[Dict]:
+def get_field(field="*") -> List[Dict]:
     config = {
         'user': 'root',
         'password': 'root',
@@ -16,18 +15,16 @@ def get_images() -> List[Dict]:
     }
     connection = mysql.connector.connect(**config)
     cursor = connection.cursor()
-    cursor.execute('SELECT * FROM images')
-    results = [[_id, sum, path, title, crop] for (_id, sum, path, title, crop) in cursor]
+    cursor.execute(f"SELECT {field} FROM images")
+    results = [{field: item} for item in cursor]
     cursor.close()
     connection.close()
-
     return results
 
-
-@app.route('/')
-def index() -> str:
-    return json.dumps({'images': get_images()})
-
+@app.route('/data')
+def query() -> str:
+    field = request.args.get("field") or "*"
+    return json.dumps(get_field(field))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
